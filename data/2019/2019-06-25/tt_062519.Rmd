@@ -1,0 +1,63 @@
+---
+title: "Tidy Tuesday: UFO Encounters"
+author: "Charles Davis"
+date: "6/25/2019"
+output:
+  html_document:
+    toc: yes
+  html_notebook:
+    code_folding: hide
+    df_print: paged
+    number_sections: yes
+    theme: cerulean
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+
+setwd("~/Desktop/tidytuesday/data/2019/2019-06-25")
+ufo = read.csv("ufo_sightings.csv")
+```
+
+OK. What can we ask with this dataset?
+
+- Does the length of UFO encounter vary by the perceived shape? Or by country?
+
+```{r country}
+
+country_n <- ufo %>% 
+  group_by(country) %>%
+  summarise(count=n())
+
+country <- ufo %>%
+  group_by(country) %>%
+  summarise(avg_length=mean(encounter_length, na.rm=TRUE))
+
+shape <- ufo %>%
+  group_by(ufo_shape) %>%
+  summarise(avg_length=mean(encounter_length, na.rm=TRUE))
+
+```
+
+It's clear that the US sees more UFOs than other countries do. Are there particularly good UFO-viewing spots in the US? 
+
+```{r state}
+
+state_map <- map_data("state")
+stateInfo=cbind.data.frame(abb=tolower(state.abb),name=tolower(state.name))
+
+state_n <- ufo %>%
+  dplyr::filter(country == "us") %>%
+  group_by(state) %>%
+  summarise(count=n())
+
+state <- ufo %>%
+  dplyr::filter(country == "us") %>%
+  group_by(state) %>%
+  summarise(avg_length=mean(encounter_length, na.rm=TRUE))
+
+```
+
